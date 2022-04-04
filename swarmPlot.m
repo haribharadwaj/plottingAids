@@ -31,23 +31,27 @@ if ~exist('msize', 'var')
 end
 
 if ~exist('col', 'var')
-col = [0.2, 0.2, 0.2];
+    col = [0.2, 0.2, 0.2];
 end
 
 if ~exist('nbins', 'var')
-nbins = 20;
+    nbins = 20;
 end
 
 if ~exist('swarmWidth', 'var')
-swarmWidth = 1;
+    swarmWidth = 1;
 end
 
 if ~exist('symb', 'var')
     symb = 'o';
 end
 
-addYjitter = true; % can expose this setting if needed
+%% Unexposed settings: can expose if needed
+addYjitter = true; 
+addmedian = true;
+adderrorbar = false;
 markerFaceAlpha = 0.3;
+lw = 2;
 
 %% Actual swarmp plot
 [counts, edges] = histcounts(y, nbins);
@@ -67,4 +71,18 @@ for bin = 1:nbins
         'MarkerEdgeColor', col, 'MarkerFaceColor', col);
     scatterh.MarkerFaceAlpha = markerFaceAlpha;
     hold on;
+end
+
+if addmedian
+    ymed = nanmedian(y);
+    hold on;
+    plot([xpos - swarmWidth/2, xpos + swarmWidth/2], [ymed, ymed],...
+        'linew', lw, 'col', col);
+end
+if adderrorbar
+    hold on;
+    ymed = nanmedian(y);
+    yerr = nanmad1(y) / sqrt(sum(~isnan(y)));
+    errorbar(xpos, ymed, yerr, ...
+        'linew', lw, 'col', col);
 end
